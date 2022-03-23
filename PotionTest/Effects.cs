@@ -1,0 +1,47 @@
+﻿namespace PotionTest;
+
+public enum Effect
+{
+	LightningResistance, // Polar Effects
+	ArcaneResistance,
+	BludgeoningResistance,
+	SlashingResistance,
+	PiercingResistance,
+	AcidResistance,
+	ColdResistance,
+	HeatResistance,
+	PoisonResistance,
+	Heal,
+	Recovery,
+	Speed,
+	Leaping,
+	Marathon,
+	Dexterity,
+	Power,
+	Efficiency,
+	Darkvision,
+	HearingRange,
+	FeatherFall,
+	BloodFiltration,
+	Breathing,
+	Digestion,
+	SpeedEating,
+	Luck,
+	WaterBreathing,
+	Reach,
+	Size,
+	Knockback,
+	Silence,
+
+	Awkward, // Neutral Effects
+	Invisbility,
+	Glowing,
+	LiquidWalking,
+	ColorChange,
+	Hallucinations,
+	ColorBlindness,
+	Blindness,
+	Nausea,
+	Nullification,
+	Amplification,
+}
