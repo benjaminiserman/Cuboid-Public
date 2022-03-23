@@ -6,7 +6,7 @@ public static class Program
 	private static readonly List<Ingredient> _ingredients = new();
 	private static readonly List<Potion> _potions = new();
 	private static readonly List<Ingredient> _cauldron = new();
-	private static int _cauldronWater = 0;
+	private static int _cauldronWater = 1;
 
 	public static void Main()
 	{
@@ -55,7 +55,7 @@ public static class Program
 							}
 						}
 
-						IngredientDone:;
+IngredientDone:;
 					}
 				}
 
@@ -63,47 +63,51 @@ public static class Program
 			}
 			else if (split[0].ToLower() == "c")
 			{
-				if (split[1].ToLower() == "f")
+				foreach (string s in split[1..])
 				{
-					if (_cauldronWater == 0) _cauldronWater = 1;
-
-					_potions.Add(Potion.Combine(_cauldron).Divide(_cauldronWater).First());
-					_cauldron.Clear();
-					_cauldronWater = 0;
-
-					Console.WriteLine("Created new potion: ");
-					_potions[^1].PrettyPrint();
-				}
-				else if (split[1].ToLower() == "w")
-				{
-					_cauldronWater = int.Parse(split[2]);
-				}
-				else if (split[1].ToLower() == "g")
-				{
-					PrintCauldron();
-				}
-				else
-				{
-					foreach (string s in split[1..])
+					if (split[1].ToLower() == "f")
+					{
+						Finish();
+					}
+					else if (split[1].ToLower() == "g")
+					{
+						PrintCauldron();
+					}
+					else if (s == "f")
+					{
+						Finish();
+					}
+					else
 					{
 						int x = s.IndexOf('x');
-						if (x == -1) x = split.Length;
-						Ingredient ingredient = GetFromString(s[..x]);
+						if (x == -1) x = s.Length;
 
-						double amount = 1;
-						if (x != s.Length) amount = double.Parse(s[(x + 1)..]);
-
-						Ingredient match = _cauldron.FirstOrDefault(x => x.Name == ingredient.Name);
-						if (match is not null)
+						if (s[..x].ToLower() == "w")
 						{
-							match.Amount += ingredient.Amount * amount;
+							int amount = 1;
+							if (x != s.Length) amount = int.Parse(s[(x + 1)..]);
+
+							_cauldronWater = amount;
 						}
 						else
 						{
-							ingredient = new(ingredient);
-							ingredient.Amount *= amount;
+							Ingredient ingredient = GetFromString(s[..x]);
 
-							_cauldron.Add(ingredient);
+							double amount = 1;
+							if (x != s.Length) amount = double.Parse(s[(x + 1)..]);
+
+							Ingredient match = _cauldron.FirstOrDefault(x => x.Name == ingredient.Name);
+							if (match is not null)
+							{
+								match.Amount += ingredient.Amount * amount;
+							}
+							else
+							{
+								ingredient = new(ingredient);
+								ingredient.Amount *= amount;
+
+								_cauldron.Add(ingredient);
+							}
 						}
 					}
 				}
@@ -116,9 +120,14 @@ public static class Program
 				{
 					var distilled = p.Distill();
 					if (!distilled.Any()) Console.WriteLine("Distillation failed.");
-					else foreach (var x in distilled)
+					else
 					{
-						_potions.Add(x);
+						foreach (var x in distilled)
+						{
+							_potions.Add(x);
+							Console.WriteLine("Created new potion: ");
+							_potions[^1].PrettyPrint();
+						}
 					}
 				}
 				else
@@ -126,7 +135,32 @@ public static class Program
 					Console.WriteLine("Cannot distill raw ingredients.");
 				}
 			}
+			else if (split[0].ToLower() == "l")
+			{
+				Ingredient ingredient = GetFromString(split[1]);
+
+				if (ingredient is Potion p)
+				{
+					_potions.Add(p.Calcinate());
+					Console.WriteLine("Created new potion: ");
+					_potions[^1].PrettyPrint();
+				}
+				else
+				{
+					Console.WriteLine("Cannot calcinate raw ingredients.");
+				}
+			}
 		}
+	}
+
+	private static void Finish()
+	{
+		_potions.Add(Potion.Combine(_cauldron).Divide(_cauldronWater).First());
+		_cauldron.Clear();
+		_cauldronWater = 1;
+
+		Console.WriteLine("Created new potion: ");
+		_potions[^1].PrettyPrint();
 	}
 
 	private static Ingredient GetFromString(string s) => s[0] switch

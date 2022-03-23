@@ -60,8 +60,10 @@ internal class Potion : Ingredient
 				case Symptom s:
 				{
 					p._symptoms.Remove(s);
+					p.Name = GetName();
 					yield return p;
 					o._symptoms.Add(s);
+					o.Name = GetName();
 					yield return o;
 					break;
 				}
@@ -69,15 +71,30 @@ internal class Potion : Ingredient
 				{
 					p._symptoms.Remove(a);
 					p._symptoms.Remove(b);
+					p.Name = GetName();
 					yield return p;
 					o._symptoms.Add(a);
 					o._symptoms.Add(b);
+					o.Name = GetName();
 					yield return o;
 					break;
 				}
 			}
 		}
 		else yield break;
+	}
+
+	public Potion Calcinate()
+	{
+		Potion p = new(this);
+		foreach (var x in _symptoms.Where(y => y.Neutral))
+		{
+			p._symptoms.Remove(x);
+		}
+
+		p.Name = GetName();
+
+		return p;
 	}
 
 	private string GetName() => $"Potion {Program.PotionCount}";
